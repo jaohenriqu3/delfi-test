@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delfi City</title> 
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script> 
+    <style> 
+      body{
+        margin: 0; 
+        overflow: hidden;
+       
+      }
+    </style>
+</head>
+<body>
+    <script type="text/javascript">
+
+    const config = {
+    type: Phaser.AUTO,
+    width: window.innerWidth,  // Pega a largura total da tela
+    height: window.innerHeight,  // Pega a altura total da tela
+    physics: {
+      default: "arcade",
+      arcade: { debug: false }
+    },
+    scene: {
+      preload: preload,
+      create: create,
+      update: update
+    },
+    scale: {
+        mode: Phaser.Scale.RESIZE,  // Faz o jogo ajustar ao tamanho da tela
+        autoCenter: Phaser.Scale.CENTER_BOTH // Centraliza a cena na tela
+    }
+  };
+  
+  const game = new Phaser.Game(config);
+  
+  function preload() {
+    this.load.image("tiles", "assets/tilemap_packed.png");
+    this.load.tilemapTiledJSON("map", "assets/delfi-city.json");
+  }
+  
+  function create() {
+    const map = this.make.tilemap({ key: "map" });
+    const tileset = map.addTilesetImage("city-map" , "tiles");
+
+    if (!tileset) {
+                console.error("Erro ao carregar tileset. Verifique o nome no Tiled.");
+            }
+  
+    const chaoLayer = map.createLayer("Chão", tileset, 0, 0); 
+    const objetoLayer = map.createLayer("Objetos", tileset, 0, 0);
+
+    // Resolvendo problema do áudio bloqueado pelo navegador
+    const unlockAudio = () => {
+        if (this.sound.context.state === "suspended") {
+            this.sound.context.resume().then(() => {
+                console.log("Áudio desbloqueado!");
+            });
+        }
+    };
+
+    // Ajusta a câmera para cobrir exatamente a tela
+    this.cameras.main.setViewport(0, 0, window.innerWidth, window.innerHeight);
+    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    this.cameras.main.centerOn(map.widthInPixels / 2, map.heightInPixels / 2);
+
+  // Ativando a câmera para seguir o jogador
+   // this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+   // this.cameras.main.startFollow(player);
+  }
+  
+  function update() {
+    // Aqui vai a lógica de movimentação do player e câmera
+  }
+    </script>
+</body>
+</html>
