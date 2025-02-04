@@ -8,8 +8,7 @@
     <style> 
       body{
         margin: 0; 
-        overflow: hidden;
-       
+        overflow: hidden; 
       }
     </style>
 </head>
@@ -53,6 +52,12 @@
     const chaoLayer = map.createLayer("Chão", tileset, 0, 0); 
     const objetoLayer = map.createLayer("Objetos", tileset, 0, 0);
 
+    // Ajustar tamanho do mapa para cobrir toda a tela
+  map.setTileSize(16, 16); // Definir o tamanho do tile (ajuste se necessário)
+  map.widthInPixels = Math.max(window.innerWidth, map.widthInPixels);
+  map.heightInPixels = Math.max(window.innerHeight, map.heightInPixels);
+
+
     // Resolvendo problema do áudio bloqueado pelo navegador
     const unlockAudio = () => {
         if (this.sound.context.state === "suspended") {
@@ -63,9 +68,24 @@
     };
 
     // Ajusta a câmera para cobrir exatamente a tela
+    // this.cameras.main.setViewport(0, 0, window.innerWidth, window.innerHeight);
+    // this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    // this.cameras.main.centerOn(map.widthInPixels / 2, map.heightInPixels / 2);
+
     this.cameras.main.setViewport(0, 0, window.innerWidth, window.innerHeight);
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-    this.cameras.main.centerOn(map.widthInPixels / 2, map.heightInPixels / 2);
+    this.cameras.main.setZoom(Math.min(window.innerWidth / map.widthInPixels, window.innerHeight / map.heightInPixels));
+
+    window.addEventListener("resize", () => {
+    game.scale.resize(window.innerWidth, window.innerHeight);
+    game.scene.scenes.forEach(scene => {
+        if (scene.cameras) {
+            scene.cameras.main.setViewport(0, 0, window.innerWidth, window.innerHeight);
+            scene.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+            scene.cameras.main.setZoom(Math.min(window.innerWidth / map.widthInPixels, window.innerHeight / map.heightInPixels));
+        }
+    });
+});
 
   // Ativando a câmera para seguir o jogador
    // this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
